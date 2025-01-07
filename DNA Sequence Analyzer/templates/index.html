@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNA Base Counter</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>DNA Base Counter</h1>
+        <form method="POST">
+            <textarea name="dna_sequence" rows="4" cols="50" placeholder="Enter DNA sequence..."></textarea>
+            <br><br>
+            <button type="submit">Analyze</button>
+        </form>
+
+        {% if result %}
+            {% if result.error %}
+                <p class="error">{{ result.error }}</p>
+            {% else %}
+                <h2>Results:</h2>
+                <p>A: {{ result.base_counts.A }}</p>
+                <p>T: {{ result.base_counts.T }}</p>
+                <p>G: {{ result.base_counts.G }}</p>
+                <p>C: {{ result.base_counts.C }}</p>
+                <p>GC Content: {{ result.gc_content }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>

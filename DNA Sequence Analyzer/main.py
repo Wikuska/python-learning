@@ -1,44 +1,29 @@
-from tkinter import *
+from flask import Flask, render_template, request
 
-root = Tk()
-root.title("DNA Sequence Analyzer")
-root.geometry("400x300")
+app = Flask(__name__)
 
-Label(root, text = "Enter DNA Sequence:").pack(pady = 10)
-
-dna_entry = Entry(root, width = 30)
-dna_entry.pack(pady = 5)
-
-def analyze_dna():
-    dna_sequence = dna_entry.get().strip().upper()
-    if not all(base in "ATGC" for base in dna_sequence):
-        print("Invalid sequence! DNA should only contain A, T, G and C.")
-        return   
-
-    base_counts = {
-        "A": dna_sequence.count("A"),
-        "T": dna_sequence.count("T"),
-        "G": dna_sequence.count("G"),
-        "C": dna_sequence.count("C")
-    }
-
-    gc_content = ((base_counts['G'] + base_counts['C']) / len(dna_sequence) * 100)
-
-    result_text = (
-        f"Base Counts:\n"
-        f"A: {base_counts['A']}\n"
-        f"T: {base_counts['T']}\n"
-        f"G: {base_counts['G']}\n"
-        f"C: {base_counts['C']}\n\n"
-        f"GC Content: {gc_content:.2f}%"
-    )
-    results_label.config(text = result_text)
-
-
-Button(root, text = "Analyze", command = analyze_dna).pack(pady = 10)
-
-results_label = Label(root, text = "", justify = "left")
-results_label.pack(pady = 10)
-
-root.mainloop()
+@app.route("/", methods=["GET", "POST"])
+def home():
+    result = None
+    if request.method == "POST":
+        dna_sequence = request.form["dna_sequence"].strip().upper()
+        
+        if not all(base in "ATGC" for base in dna_sequence):
+            result = {"error": "Invalid sequence! Use only A, T, G, and C."}
+        else:
+            base_counts = {
+                "A": dna_sequence.count("A"),
+                "T": dna_sequence.count("T"),
+                "G": dna_sequence.count("G"),
+                "C": dna_sequence.count("C")
+            }
+            gc_content = ((base_counts["G"] + base_counts["C"]) / len(dna_sequence)) * 100
+            result = {
+                "base_counts": base_counts,
+                "gc_content": f"{gc_content:.2f}%"
+            }
     
+    return render_template("index.html", result=result)
+
+if __name__ == "__main__":
+    app.run(debug=True)
