@@ -17,11 +17,13 @@ body {
 }
 
 textarea {
-    width: 100%;
+    width: 560px;
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 10px;
     font-size: 14px;
+    resize: none;
+    overflow: auto;
 }
 
 button {

@@ -12,7 +12,8 @@
         <form method="POST">
             <textarea name="dna_sequence" rows="4" cols="50" placeholder="Enter DNA sequence..."></textarea>
             <br><br>
-            <button type="submit">Analyze</button>
+            <button type="submit" name = "action" value="import">Import from file</button>
+            <button type="submit" name = "action" value="analyze">Base Analyze</button>
         </form>
 
         {% if result %}
