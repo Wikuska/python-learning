@@ -10,10 +10,11 @@
     <div class="container">
         <h1>DNA Base Counter</h1>
         <form method="POST">
-            <textarea name="dna_sequence" rows="4" cols="50" placeholder="Enter DNA sequence..."></textarea>
+            <textarea name="dna_sequence" rows="4" cols="50" placeholder="Enter DNA sequence...">{{ dna_sequence }}</textarea>
             <br><br>
             <button type="submit" name = "action" value="import">Import from file</button>
             <button type="submit" name = "action" value="analyze">Base Analyze</button>
+            <button type="submit" name = "action" value="to_rna">RNA Transcription</button>
         </form>
 
         {% if result %}
@@ -21,11 +22,7 @@
                 <p class="error">{{ result.error }}</p>
             {% else %}
                 <h2>Results:</h2>
-                <p>A: {{ result.base_counts.A }}</p>
-                <p>T: {{ result.base_counts.T }}</p>
-                <p>G: {{ result.base_counts.G }}</p>
-                <p>C: {{ result.base_counts.C }}</p>
-                <p>GC Content: {{ result.gc_content }}</p>
+                <p class="result">{{ result }}</p>
             {% endif %}
         {% endif %}
     </div>

@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request
+from analyze_functions import validate_sequence, base_analyze, rna_transcription
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     result = None
+    dna_sequence = ""
     if request.method == "POST":
         # Get the action (which button was clicked)
         action = request.form.get("action")
@@ -13,25 +15,22 @@ def home():
         
         if action == "import":
             result = {"error": "Feature coming soon"}
+
         elif action == "analyze":
-            if not all(base in "ATGC" for base in dna_sequence):
-                result = {"error": "Invalid sequence! Use only A, T, G, and C."}
-            elif dna_sequence == "":
-                result = {"error": "No sequence in form."}
+            sequence_validated = validate_sequence(dna_sequence)
+            if not sequence_validated:
+                result = {"error": "Invalid sequence!"}
             else:
-                base_counts = {
-                    "A": dna_sequence.count("A"),
-                    "T": dna_sequence.count("T"),
-                    "G": dna_sequence.count("G"),
-                    "C": dna_sequence.count("C")
-                }
-                gc_content = ((base_counts["G"] + base_counts["C"]) / len(dna_sequence)) * 100
-                result = {
-                    "base_counts": base_counts,
-                    "gc_content": f"{gc_content:.2f}%"
-                }
+                result = base_analyze(dna_sequence)
+
+        elif action == "to_rna":
+            sequence_validated = validate_sequence(dna_sequence)
+            if not sequence_validated:
+                result = {"error": "Invalid sequence!"}
+            else:
+                result = rna_transcription(dna_sequence)
     
-    return render_template("index.html", result=result)
+    return render_template("index.html", result=result, dna_sequence = dna_sequence)
 
 if __name__ == "__main__":
     app.run(debug=True)

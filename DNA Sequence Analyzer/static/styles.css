@@ -17,10 +17,9 @@ body {
 }
 
 textarea {
-    width: 560px;
+    width: 100%;
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 10px;
     font-size: 14px;
     resize: none;
     overflow: auto;
@@ -41,4 +40,12 @@ button:hover {
 
 .error {
     color: red;
+}
+
+.result {
+    overflow: auto;
+    width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-height: 210px;
 }
