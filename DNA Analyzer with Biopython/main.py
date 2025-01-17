@@ -14,6 +14,9 @@ def app():
         print("2. Get sequence length")
         print("3. Get amount of each nucleotides")
         print("4. Get GC %")
+        print("5. Get mRNA")
+        print("6. Translate to first stop codon")
+        print("7. Translate all")
         operation = int(input("What would you like to do? Choose number from options: "))
         print("--------------------------------------------------------")
 
@@ -25,6 +28,12 @@ def app():
             print(f"A: {seq.count("A")}\nT: {seq.count("T")}\nC: {seq.count("C")}\nG: {seq.count("G")}")
         elif operation == 4:
             print(round(100 * (gc_fraction(seq)), 1))
+        elif operation == 5:
+            print(seq.transcribe())
+        elif operation == 6:
+            print(seq.translate(table = 2, to_stop = True))
+        elif operation == 7:
+            print(seq.translate(table = 2))
 
         print("--------------------------------------------------------")    
         go_on = input("\nWould you like to make more operations?(y/n): ").upper()
