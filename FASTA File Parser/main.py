@@ -1,4 +1,5 @@
 from Bio import SeqIO
+from operations import records_num, records_lenght
 
 OPERATIONS_LIST = ["Show operations list", "Get records number", "Get each record length"]
 
@@ -41,9 +42,16 @@ def app():
     
     while True:
         operation = choose_operation()
-        
+
         if operation == 1:
             show_operations_list()
+
+        if operation == 2:
+            records = records_num(filename)
+            print(f"There are {records} records in this file")
+
+        if operation == 3:
+            records_lenght(filename)
 
         while True:
             go_on = input("Would you like to do something else? (y/n): ").lower().strip()
