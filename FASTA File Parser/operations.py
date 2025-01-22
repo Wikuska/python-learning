@@ -45,4 +45,27 @@ def find_longest_shortest(filename):
                     longest_shortest_dict["shortest"]["length"] = value["length"]
         
         return longest_shortest_dict
+    
+def choose_record(filename):
+    print("Here is list of records from this file you can work on:")
+    record_list = []
+    i = 1
+    for seq_record in SeqIO.parse(filename, "fasta"):
+        print(f"{i}: {seq_record.description}")
+        record_list.append(str(seq_record.seq))
+        i += 1
 
+    while True:
+        try:
+            sequence_num = int(input("Enter number of sequence you want to use: ").strip())
+            if sequence_num > len(record_list) or sequence_num < 1:
+                raise IndexError
+        except ValueError:
+            print("Please enter a number.")
+        except IndexError:
+            print("No such operation avaliable.")
+        except Exception as e:
+            print(f"An unexpected error occured: {e}")
+        else:
+            sequence_string = record_list[sequence_num - 1]
+            return sequence_string
