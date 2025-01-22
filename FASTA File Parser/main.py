@@ -1,7 +1,7 @@
 from Bio import SeqIO
-from operations import records_num, records_lenght
+from operations import records_num, records_lenght, find_longest_shortest
 
-OPERATIONS_LIST = ["Show operations list", "Get records number", "Get each record length"]
+OPERATIONS_LIST = ["Show operations list", "Get records number", "Get each record length", "Get the longest and the shortest record"]
 
 def show_operations_list():
     print("Operations list:")
@@ -51,10 +51,20 @@ def app():
             print(f"There are {records} records in this file")
 
         if operation == 3:
-            records_lenght(filename)
+            length_dict = records_lenght(filename)
+            for key, value in length_dict.items():
+                print(f"\nID: {value['id']}\nDescription: {value['description']}\nSequence length: {value["length"]}")
+
+        if operation == 4:
+            longest_shortest_dict = find_longest_shortest(filename)
+            if longest_shortest_dict:
+                print(f"\nLongest:\nID{longest_shortest_dict["longest"]["id"]}\nDescription: {longest_shortest_dict["longest"]["description"]}\nLength: {longest_shortest_dict["longest"]["length"]}")
+                print(f"\nLongest:\nID{longest_shortest_dict["shortest"]["id"]}\nDescription: {longest_shortest_dict["shortest"]["description"]}\nLength: {longest_shortest_dict["shortest"]["length"]}")
+            else:
+                print("\nThis file contains only one sequence")
 
         while True:
-            go_on = input("Would you like to do something else? (y/n): ").lower().strip()
+            go_on = input("\nWould you like to do something else? (y/n): ").lower().strip()
             if go_on == "n" or go_on == "y":
                 break
             else:
