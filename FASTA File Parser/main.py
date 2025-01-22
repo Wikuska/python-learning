@@ -19,5 +19,17 @@ def app():
     print("Operations list:")
     for operation in OPERATIONS_LIST:
         print(str(OPERATIONS_LIST.index(operation) + 1) + ". " + operation)
+    
+    while True:
+        try:
+            operation = int(input("What would you like to do with your data? Enter operation number: "))
+            if operation > len(OPERATIONS_LIST) or operation < 1:
+                raise IndexError
+        except ValueError:
+            print("Please enter a number.")
+        except IndexError:
+            print("No such operation avaliable.")
+        else:
+            break  
 
 app()
