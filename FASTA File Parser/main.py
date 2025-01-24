@@ -1,5 +1,5 @@
 from Bio import SeqIO
-from operations import records_num, records_lenght, find_longest_shortest, choose_record
+from operations import records_num, records_length, find_longest_shortest, choose_record
 
 FILE_OPERATIONS_LIST = ["Show operations list", "Get records number", "Get each record length", "Get the longest and the shortest record", "Work on particular record"]
 SEQUENCE_OPERATIONS_LIST = ["Show operations list", "Choose another sequence", "Go back to file operations"]
@@ -62,7 +62,7 @@ def app():
             print(f"There are {records} records in this file")
 
         if file_operation == 3:
-            length_dict = records_lenght(filename)
+            length_dict = records_length(filename)
             for key, value in length_dict.items():
                 print(f"\nID: {value['id']}\nDescription: {value['description']}\nSequence length: {value["length"]}")
 

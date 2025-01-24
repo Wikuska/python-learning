@@ -9,7 +9,7 @@ def records_num(filename):
         records += 1
     return records
 
-def records_lenght(filename):
+def records_length(filename):
     recods_length_dict = {}
     i = 1
     for seq_record in SeqIO.parse(filename, "fasta"):
@@ -25,7 +25,7 @@ def records_lenght(filename):
     return recods_length_dict
 
 def find_longest_shortest(filename):
-    records_length_dict = records_lenght(filename)
+    records_length_dict = records_length(filename)
     if len(records_length_dict) < 2:
         return False
     else:
