@@ -3,7 +3,7 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtGui import QAction
-from operations import records_num, records_length, find_longest_shortest
+from operations import records_ids, records_num, records_length, find_longest_shortest
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -26,8 +26,12 @@ class MainWindow(QMainWindow):
         # Label and combobox for choosing sequence
         self.choose_seq_label = QLabel("Chosen sequence: ", self)
         choose_seq_layout.addWidget(self.choose_seq_label)
+
         self.choose_seq_combobox = QComboBox(self)
         self.choose_seq_combobox.setFixedWidth(150)
+        self.choose_seq_combobox.addItem("None")
+        self.choose_seq_combobox.setEnabled(False)
+
         choose_seq_layout.addWidget(self.choose_seq_combobox)
         choose_seq_layout.addStretch()
         main_layout.addLayout(choose_seq_layout)
@@ -85,6 +89,10 @@ class MainWindow(QMainWindow):
                 self.filename_label.setText(f"Choosen file: {self.file_name}")
                 self.output_label.setText("File successfully uploaded")
                 self.file_operations.setEnabled(True)
+
+                ids_list = records_ids(self.file_name)
+                self.choose_seq_combobox.addItems(ids_list)
+                self.choose_seq_combobox.setEnabled(True)
 
     def records_number_act(self):
         records = records_num(self.file_name)

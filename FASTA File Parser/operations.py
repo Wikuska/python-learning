@@ -3,6 +3,12 @@ from Bio.Seq import Seq
 from Bio.SeqUtils import gc_fraction
 import re
 
+def records_ids(filename):
+    ids_list = []
+    for seq_record in SeqIO.parse(filename, "fasta"):
+        ids_list.append(seq_record.id)
+    return ids_list
+
 def records_num(filename):
     records = 0
     for seq_record in SeqIO.parse(filename, "fasta"):
