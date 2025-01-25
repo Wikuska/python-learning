@@ -4,7 +4,7 @@ from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, Q
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtGui import QAction
 from operations import records_ids, check_seq_type, records_num, records_length, find_longest_shortest
-from sequence_operations import nucleotides_count, gc_content
+from sequence_operations import seq_length, nucleotides_count, gc_content, get_complementary, get_reverse_complementary, transcribe_seq
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -51,7 +51,9 @@ class MainWindow(QMainWindow):
         # Output label nested in scroll area
         self.output_label = QLabel("Please import your file", self)
         self.output_label.setWordWrap(True)
+        self.output_label.setStyleSheet("padding: 5px")
         self.output_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+
         self.scroll_area.setWidget(self.output_label)
         main_layout.addWidget(self.scroll_area)
 
@@ -87,14 +89,22 @@ class MainWindow(QMainWindow):
         self.sequence_operations.setEnabled(False)
 
         # DNA menu actions
+        sequence_length_action = QAction("&Get sequence length", self)
+        sequence_length_action.triggered.connect(self.sequence_length_act)
         nucleotides_count_action = QAction("&Get number of each nucleotide", self)
         nucleotides_count_action.triggered.connect(self.nucleotides_count_act)
         gc_content_action = QAction("&Get GC %", self)
         gc_content_action.triggered.connect(self.gc_content_act)
+        complementary_action = QAction("&Get complementary sequence", self)
+        complementary_action.triggered.connect(self.complementary_act)
+        reverse_complementary_action = QAction("&Get reverse complementary sequence", self)
+        reverse_complementary_action.triggered.connect(self.reverse_complementary_act)
+        transcribe_action = QAction("&Transcribe to mRNA", self)
+        transcribe_action.triggered.connect(self.transcribe_act)
 
         # Setting DNA operations menu
         dna_operations = self.sequence_operations.addMenu("&DNA")
-        dna_operations.addActions([nucleotides_count_action, gc_content_action])
+        dna_operations.addActions([sequence_length_action, nucleotides_count_action, gc_content_action, complementary_action, reverse_complementary_action, transcribe_action])
 
         # Adding all widgets to main window
         container = QWidget()
@@ -147,6 +157,10 @@ class MainWindow(QMainWindow):
             self.output_label.setText(self.output_label.text() + f"\n\nShortest:\nID: {longest_shortest_dict["shortest"]["id"]}\nDescription: {longest_shortest_dict["shortest"]["description"]}\nLength: {longest_shortest_dict["shortest"]["length"]}")
 
     # DNA operations actions
+    def sequence_length_act(self):
+        length = seq_length(self.file_name, self.sequence_id)
+        self.output_label.setText(f"Length of this sequence: {length}")
+
     def nucleotides_count_act(self):
         count_dict = nucleotides_count(self.file_name, self.sequence_id, self.sequence_type)
         self.output_label.setText("")
@@ -156,6 +170,18 @@ class MainWindow(QMainWindow):
     def gc_content_act(self):
         content = gc_content(self.file_name, self.sequence_id)
         self.output_label.setText(f"GC % of this sequence: {content}%")
+
+    def complementary_act(self):
+        complementary_seq = get_complementary(self.file_name, self.sequence_id)
+        self.output_label.setText(f"Complementary sequence:\n{complementary_seq}")
+
+    def reverse_complementary_act(self):
+        reverse_comp_seq = get_reverse_complementary(self.file_name, self.sequence_id)
+        self.output_label.setText(f"Reverse complementary sequence:\n{reverse_comp_seq}")
+
+    def transcribe_act(self):
+        mrna = transcribe_seq(self.file_name, self.sequence_id)
+        self.output_label.setText(f"Template RNA:\n{mrna}")
 
     # Combobox text change handling   
     def sequence_changed(self, text):
