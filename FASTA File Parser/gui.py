@@ -1,7 +1,7 @@
 from Bio import SeqIO
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea
-from PySide6.QtWidgets import QVBoxLayout
+from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtGui import QAction
 from operations import records_num, records_length, find_longest_shortest
 
@@ -11,32 +11,47 @@ class MainWindow(QMainWindow):
 
         self.file_name = ""
 
+        # Setting window
         self.setWindowTitle("FASTA File Perser")
         self.setFixedSize(QSize(600, 300))
 
-        layout = QVBoxLayout()
+        # Layouts
+        main_layout = QVBoxLayout()
+        choose_seq_layout = QHBoxLayout()
 
+        # Label showing chosen file 
         self.filename_label = QLabel("Chosen file: None", self)
-        layout.addWidget(self.filename_label)
+        main_layout.addWidget(self.filename_label)
 
+        # Label and combobox for choosing sequence
+        self.choose_seq_label = QLabel("Chosen sequence: ", self)
+        choose_seq_layout.addWidget(self.choose_seq_label)
+        self.choose_seq_combobox = QComboBox(self)
+        self.choose_seq_combobox.setFixedWidth(150)
+        choose_seq_layout.addWidget(self.choose_seq_combobox)
+        choose_seq_layout.addStretch()
+        main_layout.addLayout(choose_seq_layout)
+
+        # Scroll area for output
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
-
+        # Output label nested in scroll area
         self.output_label = QLabel("Please import your file", self)
         self.output_label.setWordWrap(True)
         self.output_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-
         self.scroll_area.setWidget(self.output_label)
-
-        layout.addWidget(self.scroll_area)
+        main_layout.addWidget(self.scroll_area)
         
+        # Setting menu
         menu = self.menuBar()
 
+        # Import file menu action
         import_action = QAction("&Import File", self)
         import_action.triggered.connect(self.import_file)
         import_file = menu.addMenu("&Import File")
         import_file.addAction(import_action)
 
+        # File operations menu actions
         records_number_action = QAction("&Get number of records", self)
         records_number_action.triggered.connect(self.records_number_act)
         records_length_action = QAction("&Get length of each record", self)
@@ -44,14 +59,18 @@ class MainWindow(QMainWindow):
         shortest_longest_record_action = QAction("&Get the longest and the sortest record", self)
         shortest_longest_record_action.triggered.connect(self.shortest_longest_record_act)
 
+        # Setting file operations menu
         self.file_operations = menu.addMenu("&File Operations")
         self.file_operations.setEnabled(False)
         self.file_operations.addActions([records_number_action, records_length_action, shortest_longest_record_action])
 
-        sequence_operations = menu.addMenu("&Sequence Operations")
+        # Setting sequence opertions menu
+        self.sequence_operations = menu.addMenu("&Sequence Operations")
+        self.sequence_operations.setEnabled(False)
 
+        # Adding all widgets to main window
         container = QWidget()
-        container.setLayout(layout)
+        container.setLayout(main_layout)
         self.setCentralWidget(container)
 
     def import_file(self):
@@ -91,7 +110,7 @@ class MainWindow(QMainWindow):
             self.output_label.setText(f"Longest:\nID: {longest_shortest_dict["longest"]["id"]}\nDescription: {longest_shortest_dict["longest"]["description"]}\nLength: {longest_shortest_dict["longest"]["length"]}")
             self.output_label.setText(self.output_label.text() + f"\n\nShortest:\nID: {longest_shortest_dict["shortest"]["id"]}\nDescription: {longest_shortest_dict["shortest"]["description"]}\nLength: {longest_shortest_dict["shortest"]["length"]}")
         
-
+# Run app
 app = QApplication([])
 w = MainWindow()
 w.show()
