@@ -3,7 +3,7 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtGui import QAction
-from operations import records_ids, records_num, records_length, find_longest_shortest
+from operations import records_ids, check_seq_type, records_num, records_length, find_longest_shortest
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -35,6 +35,11 @@ class MainWindow(QMainWindow):
         self.choose_seq_combobox.currentTextChanged.connect(self.sequence_changed)
 
         choose_seq_layout.addWidget(self.choose_seq_combobox)
+
+        # Label for chosen sequence type
+        self.seq_type_label = QLabel("Sequence type: None", self)
+        choose_seq_layout.addWidget(self.seq_type_label)
+
         choose_seq_layout.addStretch()
         main_layout.addLayout(choose_seq_layout)
 
@@ -128,8 +133,11 @@ class MainWindow(QMainWindow):
         if text == "None":
             self.sequence_id = ""
             self.sequence_operations.setEnabled(False)
+            self.seq_type_label.setText("Sequence type: None")
         else:
             self.sequence_id = text
+            type = check_seq_type(self.file_name, self.sequence_id)
+            self.seq_type_label.setText(f"Sequence type: {type}")
             self.sequence_operations.setEnabled(True)
 
 
