@@ -4,6 +4,7 @@ from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, Q
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtGui import QAction
 from operations import records_ids, check_seq_type, records_num, records_length, find_longest_shortest
+from sequence_operations import nucleotides_count, gc_content
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -85,6 +86,16 @@ class MainWindow(QMainWindow):
         self.sequence_operations = menu.addMenu("&Sequence Operations")
         self.sequence_operations.setEnabled(False)
 
+        # DNA menu actions
+        nucleotides_count_action = QAction("&Get number of each nucleotide", self)
+        nucleotides_count_action.triggered.connect(self.nucleotides_count_act)
+        gc_content_action = QAction("&Get GC %", self)
+        gc_content_action.triggered.connect(self.gc_content_act)
+
+        # Setting DNA operations menu
+        dna_operations = self.sequence_operations.addMenu("&DNA")
+        dna_operations.addActions([nucleotides_count_action, gc_content_action])
+
         # Adding all widgets to main window
         container = QWidget()
         container.setLayout(main_layout)
@@ -134,6 +145,17 @@ class MainWindow(QMainWindow):
         else:
             self.output_label.setText(f"Longest:\nID: {longest_shortest_dict["longest"]["id"]}\nDescription: {longest_shortest_dict["longest"]["description"]}\nLength: {longest_shortest_dict["longest"]["length"]}")
             self.output_label.setText(self.output_label.text() + f"\n\nShortest:\nID: {longest_shortest_dict["shortest"]["id"]}\nDescription: {longest_shortest_dict["shortest"]["description"]}\nLength: {longest_shortest_dict["shortest"]["length"]}")
+
+    # DNA operations actions
+    def nucleotides_count_act(self):
+        count_dict = nucleotides_count(self.file_name, self.sequence_id, self.sequence_type)
+        self.output_label.setText("")
+        for key, value in count_dict.items():
+            self.output_label.setText(f"{self.output_label.text()} {key}: {value}\n")
+
+    def gc_content_act(self):
+        content = gc_content(self.file_name, self.sequence_id)
+        self.output_label.setText(f"GC % of this sequence: {content}%")
 
     # Combobox text change handling   
     def sequence_changed(self, text):
