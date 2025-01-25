@@ -1,6 +1,6 @@
 from Bio import SeqIO
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox
+from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox, QPushButton
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtGui import QAction
 from operations import records_ids, check_seq_type, records_num, records_length, find_longest_shortest
@@ -11,6 +11,7 @@ class MainWindow(QMainWindow):
 
         self.file_name = ""
         self.sequence_id = ""
+        self.sequence_type = ""
 
         # Setting window
         self.setWindowTitle("FASTA File Perser")
@@ -52,6 +53,11 @@ class MainWindow(QMainWindow):
         self.output_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         self.scroll_area.setWidget(self.output_label)
         main_layout.addWidget(self.scroll_area)
+
+        # Copy button
+        copy_button = QPushButton("Copy output", self)
+        copy_button.clicked.connect(self.copy_text)
+        main_layout.addWidget(copy_button)
         
         # Setting menu
         menu = self.menuBar()
@@ -128,17 +134,24 @@ class MainWindow(QMainWindow):
         else:
             self.output_label.setText(f"Longest:\nID: {longest_shortest_dict["longest"]["id"]}\nDescription: {longest_shortest_dict["longest"]["description"]}\nLength: {longest_shortest_dict["longest"]["length"]}")
             self.output_label.setText(self.output_label.text() + f"\n\nShortest:\nID: {longest_shortest_dict["shortest"]["id"]}\nDescription: {longest_shortest_dict["shortest"]["description"]}\nLength: {longest_shortest_dict["shortest"]["length"]}")
-        
+
+    # Combobox text change handling   
     def sequence_changed(self, text):
         if text == "None":
             self.sequence_id = ""
+            self.sequence_type = ""
             self.sequence_operations.setEnabled(False)
             self.seq_type_label.setText("Sequence type: None")
         else:
             self.sequence_id = text
-            type = check_seq_type(self.file_name, self.sequence_id)
-            self.seq_type_label.setText(f"Sequence type: {type}")
+            self.sequence_type = check_seq_type(self.file_name, self.sequence_id)
+            self.seq_type_label.setText(f"Sequence type: {self.sequence_type}")
             self.sequence_operations.setEnabled(True)
+
+    # Copy button action
+    def copy_text(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.output_label.text())
 
 
 # Run app
