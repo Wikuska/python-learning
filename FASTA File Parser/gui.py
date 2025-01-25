@@ -10,6 +10,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.file_name = ""
+        self.sequence_id = ""
 
         # Setting window
         self.setWindowTitle("FASTA File Perser")
@@ -31,6 +32,7 @@ class MainWindow(QMainWindow):
         self.choose_seq_combobox.setFixedWidth(150)
         self.choose_seq_combobox.addItem("None")
         self.choose_seq_combobox.setEnabled(False)
+        self.choose_seq_combobox.currentTextChanged.connect(self.sequence_changed)
 
         choose_seq_layout.addWidget(self.choose_seq_combobox)
         choose_seq_layout.addStretch()
@@ -77,6 +79,7 @@ class MainWindow(QMainWindow):
         container.setLayout(main_layout)
         self.setCentralWidget(container)
 
+    # Imort file menu actions
     def import_file(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Choose a file", "", "FASTA Files (*.fasta *.fa);;All Files (*)")
         if file_path:
@@ -91,9 +94,12 @@ class MainWindow(QMainWindow):
                 self.file_operations.setEnabled(True)
 
                 ids_list = records_ids(self.file_name)
+                for i in range(self.choose_seq_combobox.count() -1, 0, -1):
+                    self.choose_seq_combobox.removeItem(i)
                 self.choose_seq_combobox.addItems(ids_list)
                 self.choose_seq_combobox.setEnabled(True)
 
+    # File operations actions
     def records_number_act(self):
         records = records_num(self.file_name)
         if records > 1:
@@ -118,6 +124,15 @@ class MainWindow(QMainWindow):
             self.output_label.setText(f"Longest:\nID: {longest_shortest_dict["longest"]["id"]}\nDescription: {longest_shortest_dict["longest"]["description"]}\nLength: {longest_shortest_dict["longest"]["length"]}")
             self.output_label.setText(self.output_label.text() + f"\n\nShortest:\nID: {longest_shortest_dict["shortest"]["id"]}\nDescription: {longest_shortest_dict["shortest"]["description"]}\nLength: {longest_shortest_dict["shortest"]["length"]}")
         
+    def sequence_changed(self, text):
+        if text == "None":
+            self.sequence_id = ""
+            self.sequence_operations.setEnabled(False)
+        else:
+            self.sequence_id = text
+            self.sequence_operations.setEnabled(True)
+
+
 # Run app
 app = QApplication([])
 w = MainWindow()
