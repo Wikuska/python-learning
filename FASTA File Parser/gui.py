@@ -3,8 +3,8 @@ from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, Q
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from menus_dicts import dict_to_object_dict
 from file_actions import *
-from operations import *
-from sequence_operations import *
+from other_operations import *
+from sequence_actions import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -119,6 +119,24 @@ class MainWindow(QMainWindow):
 
         elif action_id == "shortest_longest_record":
             self.output_label.setText(find_longest_shortest(self.file_path))
+
+        elif action_id == "sequence_length":
+            self.output_label.setText(seq_length(self.file_path, self.sequence_id))
+
+        elif action_id == "nucleotides_count":
+            self.output_label.setText(nucleotides_count(self.file_path, self.sequence_id, self.sequence_type))
+
+        elif action_id == "gc_content":
+            self.output_label.setText(gc_content(self.file_path, self.sequence_id))
+
+        elif action_id == "complementary":
+            self.output_label.setText(get_complementary(self.file_path, self.sequence_id))
+
+        elif action_id == "reverse_complementary":
+            self.output_label.setText(get_reverse_complementary(self.file_path, self.sequence_id))
+
+        elif action_id == "transcribe":
+            self.output_label.setText(transcribe_to_mrna(self.file_path, self.sequence_id))
 
     def sequence_changed(self, text):
         if text == "None":
