@@ -1,0 +1,7 @@
+what if recort have more than one the longest or the shortest sequences?
+
+try to extract organism names form descriptions, handle as many cases as you know for now and handle unknown ones
+
+make output label wrap long text without spaces
+
+try to reduce functions in main file by making one 

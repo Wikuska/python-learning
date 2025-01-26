@@ -2,6 +2,7 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox, QPushButton
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from menus_dicts import dict_to_object_dict
+from file_actions import *
 from operations import *
 from sequence_operations import *
 
@@ -73,8 +74,11 @@ class MainWindow(QMainWindow):
 
         self.file_operations = menu.addMenu("&File Operations")
         self.file_operations.addActions(list(self.file_menu_objects.values()))
+        self.file_operations.setEnabled(False)
+
 
         self.sequence_operations = menu.addMenu("&Sequence Operations")
+        self.sequence_operations.setEnabled(False)
 
         self.dna_operations = self.sequence_operations.addMenu("&DNA")
         self.dna_operations.addActions(list(self.dna_menu_objects.values()))
@@ -88,7 +92,33 @@ class MainWindow(QMainWindow):
     def action_handler(self):
         action = self.sender()
         action_id = action.data()
-        print(action_id)
+
+        if action_id == "import_file":
+            file_path, _ = QFileDialog.getOpenFileName(self, "Choose a file", "", "FASTA Files (*.fasta *.fa);;All Files (*)")
+            if file_path:
+                try:
+                    SeqIO.parse(file_path, "fasta")
+                except Exception as e:
+                    self.output_label.setText(f"An unexpected error occured: {e}")
+                else:
+                    self.file_path = file_path
+                    self.filename_label.setText(f"Choosen file: {self.file_path}")
+                    self.file_operations.setEnabled(True)
+
+                    ids_list = records_ids(self.file_path)
+                    for i in range(self.choose_seq_combobox.count() -1, 0, -1):
+                        self.choose_seq_combobox.removeItem(i)
+                    self.choose_seq_combobox.addItems(ids_list)
+                    self.choose_seq_combobox.setEnabled(True)
+
+        elif action_id == "records_number":
+            self.output_label.setText(records_num(self.file_path))
+
+        elif action_id == "records_length":
+            self.output_label.setText(records_length(self.file_path))
+
+        elif action_id == "shortest_longest_record":
+            self.output_label.setText(find_longest_shortest(self.file_path))
 
     def sequence_changed(self, text):
         if text == "None":
