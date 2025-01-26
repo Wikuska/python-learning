@@ -1,5 +1,5 @@
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox, QPushButton
+from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from menus_dicts import dict_to_object_dict
 from file_actions import *
@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
         # Layouts
         main_layout = QVBoxLayout()
         choose_seq_layout = QHBoxLayout()
+        bottom_layout = QHBoxLayout()
 
         # Label showing chosen file 
         self.filename_label = QLabel("Chosen file: None", self)
@@ -53,7 +54,7 @@ class MainWindow(QMainWindow):
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
         # Output label nested in scroll area
-        self.output_label = QLabel("Please import your file", self)
+        self.output_label = QLabel(self)
         self.output_label.setWordWrap(True)
         self.output_label.setStyleSheet("padding: 5px")
         self.output_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
@@ -63,8 +64,16 @@ class MainWindow(QMainWindow):
 
         # Copy button
         copy_button = QPushButton("Copy output", self)
+        copy_button.setFixedWidth(150)
         copy_button.clicked.connect(self.copy_button)
-        main_layout.addWidget(copy_button)
+        bottom_layout.addWidget(copy_button)
+        bottom_layout.addStretch()
+
+        # Save output checkbox
+        self.save_output_checkbox = QCheckBox("Don't overwrite outputs", self)
+        self.save_output_checkbox.setChecked(False)
+        bottom_layout.addWidget(self.save_output_checkbox)
+        main_layout.addLayout(bottom_layout)
         
         # Setting menu
         menu = self.menuBar()
@@ -75,7 +84,6 @@ class MainWindow(QMainWindow):
         self.file_operations = menu.addMenu("&File Operations")
         self.file_operations.addActions(list(self.file_menu_objects.values()))
         self.file_operations.setEnabled(False)
-
 
         self.sequence_operations = menu.addMenu("&Sequence Operations")
         self.sequence_operations.setEnabled(False)
@@ -88,6 +96,12 @@ class MainWindow(QMainWindow):
         container.setLayout(main_layout)
         self.setCentralWidget(container)
 
+    def update_output(self, text):
+        if self.save_output_checkbox.isChecked() and self.output_label.text() != "":
+            separator = "----------------------------------------------------------------------------------------------------------"
+            self.output_label.setText(f"{self.output_label.text()}\n{separator}\n{text}")
+        else:
+            self.output_label.setText(text)
 
     def action_handler(self):
         action = self.sender()
@@ -102,6 +116,7 @@ class MainWindow(QMainWindow):
                     self.output_label.setText(f"An unexpected error occured: {e}")
                 else:
                     self.file_path = file_path
+                    self.output_label.setText("")
                     self.filename_label.setText(f"Choosen file: {self.file_path}")
                     self.file_operations.setEnabled(True)
 
@@ -112,31 +127,31 @@ class MainWindow(QMainWindow):
                     self.choose_seq_combobox.setEnabled(True)
 
         elif action_id == "records_number":
-            self.output_label.setText(records_num(self.file_path))
+            self.update_output(records_num(self.file_path))
 
         elif action_id == "records_length":
-            self.output_label.setText(records_length(self.file_path))
+            self.update_output(records_length(self.file_path))
 
         elif action_id == "shortest_longest_record":
-            self.output_label.setText(find_longest_shortest(self.file_path))
+            self.update_output(find_longest_shortest(self.file_path))
 
         elif action_id == "sequence_length":
-            self.output_label.setText(seq_length(self.file_path, self.sequence_id))
+            self.update_output(seq_length(self.file_path, self.sequence_id))
 
         elif action_id == "nucleotides_count":
-            self.output_label.setText(nucleotides_count(self.file_path, self.sequence_id, self.sequence_type))
+            self.update_output(nucleotides_count(self.file_path, self.sequence_id, self.sequence_type))
 
         elif action_id == "gc_content":
-            self.output_label.setText(gc_content(self.file_path, self.sequence_id))
+            self.update_output(gc_content(self.file_path, self.sequence_id))
 
         elif action_id == "complementary":
-            self.output_label.setText(get_complementary(self.file_path, self.sequence_id))
+            self.update_output(get_complementary(self.file_path, self.sequence_id))
 
         elif action_id == "reverse_complementary":
-            self.output_label.setText(get_reverse_complementary(self.file_path, self.sequence_id))
+            self.update_output(get_reverse_complementary(self.file_path, self.sequence_id))
 
         elif action_id == "transcribe":
-            self.output_label.setText(transcribe_to_mrna(self.file_path, self.sequence_id))
+            self.update_output(transcribe_to_mrna(self.file_path, self.sequence_id))
 
     def sequence_changed(self, text):
         if text == "None":

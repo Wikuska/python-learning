@@ -7,10 +7,10 @@ def records_num(filename):
     return f"Records found in file: {records}"
 
 def records_length(filename):
-    records_length_output = ""
+    records_length_output = "Each sequence lenght:\n"
     for seq_record in SeqIO.parse(filename, "fasta"):
         records_length_output += f"{seq_record.id} - {len(seq_record)}\n"
-    return records_length_output
+    return records_length_output.rstrip("\n")
 
 def find_longest_shortest(filename):
     length_list = []
