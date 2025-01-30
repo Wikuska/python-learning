@@ -6,9 +6,6 @@ starting_operations = [
     "Work on sequence - Avaliable only after importing a file. Let you analyse sequence chosen sequence"
 ]
 
-file_operations = ["Get number of records in file", "Get length of each record", "Get the longest and the sortest record"]
-dna_operations = ["Get sequence length", "Get number of each nucleotide", "Get GC %", "Get complementary sequence", "Get reverse complementary sequence", "Transcribe to mRNA"]
-
 main_menu_actions_dict = {
     "import_action": "Import file",
     "file_menu_action": "Work on file",

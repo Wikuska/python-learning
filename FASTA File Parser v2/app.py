@@ -1,14 +1,29 @@
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
-from PySide6.QtGui import QAction
-from Bio import SeqIO
-from menus_dicts import dict_to_object_dict, starting_operations, file_operations, dna_operations
+from menus_dicts import dict_to_object_dict, starting_operations
+from file_operations import *
+from sequence_operations import *
 from other_operations import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.file_operations = {
+            "Get number of records in file": lambda: records_num(self.file_path),
+            "Get length of each record": lambda: records_length(self.file_path),
+            "Get the longest and the sortest record": lambda: find_longest_shortest(self.file_path)
+        }
+
+        self.dna_operations = {
+            "Get sequence length": lambda: seq_length(self.file_path, self.sequence_id),
+            "Get number of each nucleotide": lambda: nucleotides_count(self.file_path, self.sequence_id, self.sequence_type),
+            "Get GC %": lambda: gc_content(self.file_path, self.sequence_id),
+            "Get complementary sequence": lambda: get_complementary(self.file_path, self.sequence_id),
+            "Get reverse complementary sequence": lambda: get_reverse_complementary(self.file_path, self.sequence_id),
+            "Transcribe to mRNA": lambda: transcribe_to_mrna(self.file_path, self.sequence_id),
+        }
 
         self.checkboxes_obj_list = []
 
@@ -115,16 +130,17 @@ class MainWindow(QMainWindow):
                 self.output_label.setText("")
                 self.filename_label.setText(f"Choosen file: {self.file_path}")
                 self.create_menu("main", starting_operations)
+                self.sequence_type = ""
             else:
                 self.output_label.setText("Importing file was canceled")
                 self.filename_label.setText(f"Choosen file: None")
                 self.create_menu("main", starting_operations)
 
         elif action_id == "file_menu":
-            self.create_menu("file", file_operations)
+            self.create_menu("file", self.file_operations)
 
         elif action_id == "sequence_menu":
-            self.create_menu("sequence", dna_operations)
+            self.create_menu("sequence", self.dna_operations)
 
 
     def create_menu(self, menu_type, operations):
@@ -173,7 +189,7 @@ class MainWindow(QMainWindow):
                 self.sequence_type = check_seq_type(self.file_path, self.sequence_id)
                 self.delete_layout_content(1, self.menu_in_menu_lo)
                 if self.sequence_type == "DNA":
-                    self.update_checkbox_list(dna_operations)
+                    self.update_checkbox_list(self.dna_operations)
 
     def delete_layout_content(self, index, layout):
         while layout.count():
@@ -188,10 +204,24 @@ class MainWindow(QMainWindow):
         if len(self.checkboxes_obj_list) > 0:
                 self.checkboxes_obj_list.clear()
 
-        for name in operations:
+        for name in operations.keys():
             checkbox = QCheckBox(name)
             self.menu_in_menu_lo.addWidget(checkbox)
             self.checkboxes_obj_list.append(checkbox)
+        procees_buttoon = QPushButton("Proceed Operations")
+        procees_buttoon.clicked.connect(lambda: self.process_selected_actions(operations))
+        self.menu_in_menu_lo.addWidget(procees_buttoon)
+
+    def process_selected_actions(self, operations):
+        selected_operations = [
+            cb.text() for cb in self.checkboxes_obj_list if cb.isChecked()
+        ]
+
+        if not selected_operations:
+            self.output_label.setText("No operations selected.")
+        else:
+            result_data = [operations[op]() for op in selected_operations]
+            self.output_label.setText(f"{'\n\n'.join(result_data)}")
             
 app = QApplication([])
 w = MainWindow()

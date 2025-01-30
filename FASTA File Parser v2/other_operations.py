@@ -31,5 +31,5 @@ def check_seq_type(filename, seq_id):
                 return "Unknown"
 
 def seperate_longer_str(text):
-    formatted_string = " ".join(text[i:i+65] for i in range(0, len(text), 65))
+    formatted_string = " ".join(text[i:i+100] for i in range(0, len(text), 100))
     return formatted_string
