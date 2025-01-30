@@ -1,4 +1,5 @@
 from Bio import SeqIO
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from Bio.SeqUtils import gc_fraction
 from other_operations import seperate_longer_str
 
@@ -47,5 +48,31 @@ def transcribe_to_mrna(filename, seq_id):
     formatted_sequence = seperate_longer_str(str(m_rna))
     return f"Messenger RNA sequence:\n{formatted_sequence}"
 
+# -----------------------------------PROTEIN ------------------------------------- #
+
 def get_molecular_weight(filename, seq_id):
-    
+    sequence = ProteinAnalysis(str((find_sequence(filename, seq_id).seq)))
+    sequence.molecular_weight()
+    return f"Protein molecular weight: {sequence.molecular_weight()/1000:.2f} kDa"
+
+def get_amino_acids_occurrence(filename, seq_id):
+    sequence = ProteinAnalysis(str((find_sequence(filename, seq_id).seq)))
+    acids_dict = sequence.count_amino_acids()
+    perc_dict = sequence.amino_acids_percent
+    output = "Amino acids occurrance:"
+    for (name, occurrence), occ_perc in zip(acids_dict.items(), perc_dict.values()):
+        output += f"\n{name} - {occurrence} - {occ_perc:.2f}%"
+    return output
+
+def find_isoelectric_point(filename, seq_id):
+    sequence = ProteinAnalysis(str((find_sequence(filename, seq_id).seq)))
+    return f"Isoelectric point: {sequence.isoelectric_point():.2f} pH"
+
+def check_stability(filename, seq_id):
+    sequence = ProteinAnalysis(str((find_sequence(filename, seq_id).seq)))
+    if sequence.instability_index() > 40:
+        return "Protein is unstable"
+    else:
+        return "Protein is stable"
+
+

@@ -25,6 +25,13 @@ class MainWindow(QMainWindow):
             "Transcribe to mRNA": lambda: transcribe_to_mrna(self.file_path, self.sequence_id),
         }
 
+        self.protein_operations = {
+            "Get molecular weight in kDa": lambda: get_molecular_weight(self.file_path, self.sequence_id),
+            "Get amino acids occurrence in number and %": lambda: get_amino_acids_occurrence(self.file_path, self.sequence_id),
+            "Get protein isoelectric point": lambda: find_isoelectric_point(self.file_path, self.sequence_id),
+            "Check protein stability": lambda: check_stability(self.file_path, self.sequence_id),
+        }
+
         self.checkboxes_obj_list = []
 
         self.main_menu_objects = dict_to_object_dict(self, self.action_handler, "main")
@@ -182,14 +189,19 @@ class MainWindow(QMainWindow):
     def sequence_changed(self, index):
             if self.sequence_combobox.itemText(0) == "Choose sequence from file" and index != 0:
                 self.sequence_combobox.removeItem(0)
+                index -= 1
             
             self.sequence_id = self.sequence_combobox.itemText(index)
 
             if self.sequence_type != check_seq_type(self.file_path, self.sequence_id):
                 self.sequence_type = check_seq_type(self.file_path, self.sequence_id)
                 self.delete_layout_content(1, self.menu_in_menu_lo)
+                sequence_type_label = QLabel(f"Sequence type: {self.sequence_type}")
+                self.menu_in_menu_lo.addWidget(sequence_type_label)
                 if self.sequence_type == "DNA":
                     self.update_checkbox_list(self.dna_operations)
+                elif self.sequence_type == "Protein":
+                    self.update_checkbox_list(self.protein_operations)
 
     def delete_layout_content(self, index, layout):
         while layout.count():
