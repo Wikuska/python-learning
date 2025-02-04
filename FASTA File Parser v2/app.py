@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):
         }
 
         self.dna_operations = {
+            "Get sequence file id": lambda: seq_id(self.sequence_id),
             "Get sequence length": lambda: seq_length(self.file_path, self.sequence_id),
             "Get number of each nucleotide": lambda: nucleotides_count(self.file_path, self.sequence_id, self.sequence_type),
             "Get GC %": lambda: gc_content(self.file_path, self.sequence_id),
@@ -26,6 +27,7 @@ class MainWindow(QMainWindow):
         }
 
         self.protein_operations = {
+            "Get sequence file id": lambda: seq_id(self.sequence_id),
             "Get molecular weight in kDa": lambda: get_molecular_weight(self.file_path, self.sequence_id),
             "Get amino acids occurrence in number and %": lambda: get_amino_acids_occurrence(self.file_path, self.sequence_id),
             "Get protein isoelectric point": lambda: find_isoelectric_point(self.file_path, self.sequence_id),
@@ -221,7 +223,8 @@ class MainWindow(QMainWindow):
             self.output_label.setText("No operations selected.")
         else:
             result_data = [operations[op]() for op in selected_operations]
-            self.output_label.setText(f"{'\n\n'.join(result_data)}")
+            checked_output = check_and_modify_long_segments(result_data)
+            self.output_label.setText(f"{'\n\n'.join(checked_output)}")
             
 app = QApplication([])
 w = MainWindow()

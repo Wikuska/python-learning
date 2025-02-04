@@ -1,12 +1,14 @@
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from Bio.SeqUtils import gc_fraction
-from other_operations import seperate_longer_str
 
 def find_sequence(filename, seq_id):
     for seq_record in SeqIO.parse(filename, "fasta"):
         if seq_record.id == seq_id:
             return seq_record
+        
+def seq_id(id):
+    return f"Sequence file id: {id}"
 
 def seq_length(filename, seq_id):
     seq_record = find_sequence(filename, seq_id)
@@ -33,20 +35,17 @@ def gc_content(filename, seq_id):
 def get_complementary(filename, seq_id):
     seq_record = find_sequence(filename, seq_id)
     complementary_seq = (seq_record.seq).complement()
-    formatted_sequence = seperate_longer_str(str(complementary_seq))
-    return f"Complementary sequence:\n{formatted_sequence}"
+    return f"Complementary sequence:\n{str(complementary_seq)}"
 
 def get_reverse_complementary(filename, seq_id):
     seq_record = find_sequence(filename, seq_id)
     reverse_complementary_seq = (seq_record.seq).reverse_complement()
-    formatted_sequence = seperate_longer_str(str(reverse_complementary_seq))
-    return f"Reverse complementary sequence:\n{formatted_sequence}"
+    return f"Reverse complementary sequence:\n{str(reverse_complementary_seq)}"
 
 def transcribe_to_mrna(filename, seq_id):
     seq_record = find_sequence(filename, seq_id)
     m_rna = (seq_record.seq).transcribe()
-    formatted_sequence = seperate_longer_str(str(m_rna))
-    return f"Messenger RNA sequence:\n{formatted_sequence}"
+    return f"Messenger RNA sequence:\n{str(m_rna)}"
 
 # -----------------------------------PROTEIN ------------------------------------- #
 

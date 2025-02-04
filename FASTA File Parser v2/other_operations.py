@@ -41,10 +41,6 @@ def check_seq_type(filename, seq_id):
             else:
                 return "Unknown"
 
-def seperate_longer_str(text):
-    formatted_string = " ".join(text[i:i+125] for i in range(0, len(text), 125))
-    return formatted_string
-
 def save_file(app, text):
     dlg = QMessageBox(app)
     dlg.setWindowTitle("Saving file")
@@ -60,3 +56,38 @@ def save_file(app, text):
     else:
         dlg.setText("Saving file was canceled")
     dlg.exec()
+
+def check_and_modify_long_segments(outputs):
+    modified_outputs = []
+    
+    for output in outputs:
+        line_length = 120
+        if len(output) > line_length:
+            lines = output.split("\n")
+            modified_lines = []
+            
+            for line in lines:
+                if len(line) > line_length:
+                    segments = line.split(" ")
+                    modified_segments = []
+                    
+                    for segment in segments:
+                        if len(segment) > line_length:
+                            modified_segment = " ".join(segment[i:i+line_length] for i in range(0, len(segment), line_length))
+                            modified_segments.append(modified_segment)
+                        else:
+                            modified_segments.append(segment)
+                    
+                    modified_line = " ".join(modified_segments)
+                    modified_lines.append(modified_line)
+
+                else:
+                    modified_lines.append(line)
+
+            modified_output = "\n".join(modified_lines)
+            modified_outputs.append(modified_output)
+            
+        else:
+            modified_outputs.append(output)
+    
+    return modified_outputs
