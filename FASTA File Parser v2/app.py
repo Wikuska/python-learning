@@ -26,6 +26,13 @@ class MainWindow(QMainWindow):
             "Transcribe to mRNA": lambda: transcribe_to_mrna(self.file_path, self.sequence_id),
         }
 
+        self.rna_operations = {
+            "Get sequence file id": lambda: seq_id(self.sequence_id),
+            "Get sequence length": lambda: seq_length(self.file_path, self.sequence_id),
+            "Get number of each nucleotide": lambda: nucleotides_count(self.file_path, self.sequence_id, self.sequence_type),
+            "Get GC %": lambda: gc_content(self.file_path, self.sequence_id),
+        }
+
         self.protein_operations = {
             "Get sequence file id": lambda: seq_id(self.sequence_id),
             "Get molecular weight in kDa": lambda: get_molecular_weight(self.file_path, self.sequence_id),
@@ -50,7 +57,8 @@ class MainWindow(QMainWindow):
         # main_page_container.setStyleSheet("background-color: yellow;")
 
         self.additional_menu_container = QWidget(self)
-        self.additional_menu_container.setMinimumWidth(400)
+        self.additional_menu_container.setFixedSize(400, 460)
+        # self.additional_menu_container.setMinimumWidth(400)
         self.additional_menu_container.setStyleSheet("background-color: #E6E6E6")
 
         menu_in_menu_cont = QFrame(self)
@@ -86,6 +94,7 @@ class MainWindow(QMainWindow):
         # Copy button
         copy_button = QPushButton("Copy output", self)
         copy_button.setFixedWidth(150)
+        copy_button.clicked.connect(self.copy_button)
         bottom_layout.addWidget(copy_button, alignment = Qt.AlignmentFlag.AlignLeft)
 
         main_page_layout.addLayout(bottom_layout)
@@ -104,6 +113,7 @@ class MainWindow(QMainWindow):
         self.create_menu("main", starting_operations)
 
         self.additional_menu_layout.addWidget(menu_in_menu_cont, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.additional_menu_layout.addStretch(1)
 
         self.window_layout.addWidget(self.additional_menu_container)
         self.window_layout.setAlignment(self.additional_menu_container, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
@@ -189,8 +199,15 @@ class MainWindow(QMainWindow):
                 self.menu_in_menu_lo.addWidget(sequence_type_label)
                 if self.sequence_type == "DNA":
                     self.update_checkbox_list(self.dna_operations)
+                elif self.sequence_type == "RNA":
+                    self.update_checkbox_list(self.rna_operations)
                 elif self.sequence_type == "Protein":
                     self.update_checkbox_list(self.protein_operations)
+                elif self.sequence_type == "Unknown":
+                    dlg = QMessageBox(self)
+                    dlg.setWindowTitle("Unknown sequence type")
+                    dlg.setText("No operations avaliable for unknown sequences")
+                    dlg.exec()
 
     def delete_layout_content(self, index, layout):
         while layout.count():
@@ -224,6 +241,10 @@ class MainWindow(QMainWindow):
             result_data = [operations[op]() for op in selected_operations]
             checked_output = check_and_modify_long_segments(result_data)
             self.output_label.setText(f"{'\n\n'.join(checked_output)}")
+
+    def copy_button(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.output_label.text())
             
 app = QApplication([])
 w = MainWindow()
