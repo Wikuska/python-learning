@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox
+from PySide6.QtWidgets import  QApplication, QMainWindow, QFrame, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from menus_dicts import dict_to_object_dict, starting_operations
 from file_operations import *
@@ -46,15 +46,17 @@ class MainWindow(QMainWindow):
 
         # Containers
         main_page_container = QWidget(self)
-        main_page_container.setStyleSheet("background-color: yellow;") ##
+        # main_page_container.setStyleSheet("background-color: yellow;")
 
         self.additional_menu_container = QWidget(self)
         self.additional_menu_container.setMinimumWidth(400)
-        self.additional_menu_container.setStyleSheet("background-color: lightblue;")
+        self.additional_menu_container.setStyleSheet("background-color: #E6E6E6")
 
-        menu_in_menu_cont = QWidget(self)
+        menu_in_menu_cont = QFrame(self)
         menu_in_menu_cont.setMinimumWidth(300)
-        menu_in_menu_cont.setStyleSheet("background-color: red;")
+        menu_in_menu_cont.setFrameStyle(QFrame.Box | QFrame.Plain)
+        menu_in_menu_cont.setLineWidth(1)
+        # menu_in_menu_cont.setStyleSheet("background-color: red;")
 
         # Layouts
         self.window_layout = QHBoxLayout()
@@ -120,16 +122,9 @@ class MainWindow(QMainWindow):
         action_id = action.data()
 
         if action_id == "import":
-            self.file_path = check_file(self)
-            if self.file_path:
-                self.output_label.setText("")
-                self.filename_label.setText(f"Choosen file: {self.file_path}")
-                self.create_menu("main", starting_operations)
-                self.sequence_type = ""
-            else:
-                self.output_label.setText("Importing file was canceled")
-                self.filename_label.setText(f"Choosen file: None")
-                self.create_menu("main", starting_operations)
+            self.file_path = check_file(self, self.filename_label)
+            self.output_label.setText("")
+            self.create_menu("main", starting_operations)
 
         elif action_id == "file_menu":
             self.create_menu("file", self.file_operations)
@@ -155,13 +150,14 @@ class MainWindow(QMainWindow):
         # Delete content
         self.title_label.setText(f"{(menu_type.title())} Operations")
         self.delete_layout_content(0, self.menu_in_menu_lo)
+        self.sequence_type = ""
 
         # Update with new one
         if menu_type == "main":
             for operation in operations:
                 label = QLabel(operation)
                 label.setWordWrap(True)
-                label.setStyleSheet("font-size: 12px; border: 1px solid green;")
+                label.setStyleSheet("font-size: 12px;")
                 label.setMinimumWidth(300)
                 self.menu_in_menu_lo.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
 

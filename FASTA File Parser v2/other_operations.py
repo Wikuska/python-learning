@@ -1,15 +1,26 @@
 from Bio import SeqIO
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
-def check_file(app):
+def check_file(app, filename_label):
+    dlg = QMessageBox(app)
+    dlg.setWindowTitle("Importing file")
     file_path, _ = QFileDialog.getOpenFileName(app, "Choose a file", "", "FASTA Files (*.fasta *.fa);;All Files (*)")
     if file_path:
         try:
             SeqIO.parse(file_path, "fasta")
-        except Exception:
+        except Exception as e:
+            filename_label.setText(f"Choosen file: None")
+            dlg.setText(f"Couldn't import a file:\n{e}")
+            dlg.exec()
             return None
         else:
+            filename_label.setText(f"Choosen file: {file_path}")
             return file_path
+    else:
+        filename_label.setText(f"Choosen file: None")
+        dlg.setText("Importing file was canceled")
+        dlg.exec()
+        return None
         
 def records_ids(filename):
     ids_list = []
