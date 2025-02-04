@@ -73,7 +73,7 @@ def check_and_modify_long_segments(outputs):
                     
                     for segment in segments:
                         if len(segment) > line_length:
-                            modified_segment = " ".join(segment[i:i+line_length] for i in range(0, len(segment), line_length))
+                            modified_segment = "\n".join(segment[i:i+line_length] for i in range(0, len(segment), line_length))
                             modified_segments.append(modified_segment)
                         else:
                             modified_segments.append(segment)

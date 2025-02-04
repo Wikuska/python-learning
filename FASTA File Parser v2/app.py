@@ -43,8 +43,7 @@ class MainWindow(QMainWindow):
         self.additional_menu_state = ""
 
         self.setWindowTitle("FASTA File Perser")
-        self.setMinimumWidth(1500)
-        self.setMinimumHeight(500)
+        self.setFixedSize(1500,500)
 
         # Containers
         main_page_container = QWidget(self)
