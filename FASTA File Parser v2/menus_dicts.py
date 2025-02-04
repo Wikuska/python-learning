@@ -1,15 +1,17 @@
 from PySide6.QtGui import QAction
 
 starting_operations = [
-    "Import file - Import FASTA file from device",
-    "Work on file - Avaliable only after importing a file. Let you analyse its contetst",
-    "Work on sequence - Avaliable only after importing a file. Let you analyse sequence chosen sequence"
+    "Import file - Import FASTA file from device.",
+    "Work on file - Avaliable only after importing a file. Let you analyse its contetst.",
+    "Work on sequence - Avaliable only after importing a file. Let you analyse sequence chosen from it.",
+    "Save output as file - Save current output as txt file"
 ]
 
 main_menu_actions_dict = {
     "import_action": "Import file",
     "file_menu_action": "Work on file",
-    "sequence_menu_action": "Work on sequence"
+    "sequence_menu_action": "Work on sequence",
+    "save_output_action": "Save output as file"
 }
 
 def dict_to_object_dict(app, function, menu):

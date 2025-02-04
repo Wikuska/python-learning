@@ -1,5 +1,5 @@
 from Bio import SeqIO
-from PySide6.QtWidgets import  QApplication, QMainWindow, QFileDialog
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 def check_file(app):
     file_path, _ = QFileDialog.getOpenFileName(app, "Choose a file", "", "FASTA Files (*.fasta *.fa);;All Files (*)")
@@ -31,5 +31,21 @@ def check_seq_type(filename, seq_id):
                 return "Unknown"
 
 def seperate_longer_str(text):
-    formatted_string = " ".join(text[i:i+100] for i in range(0, len(text), 100))
+    formatted_string = " ".join(text[i:i+125] for i in range(0, len(text), 125))
     return formatted_string
+
+def save_file(app, text):
+    dlg = QMessageBox(app)
+    dlg.setWindowTitle("Saving file")
+    file_path, _ = QFileDialog.getSaveFileName(app, "Save file", "", "Text Files (*.txt);;All Files (*)")
+    if file_path:
+        try:
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(text)
+        except Exception as e:
+            dlg.setText(f"Couldn't save a file: {e}")
+        else:
+            dlg.setText("File saved successfully")
+    else:
+        dlg.setText("Saving file was canceled")
+    dlg.exec()

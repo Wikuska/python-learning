@@ -41,11 +41,11 @@ class MainWindow(QMainWindow):
         self.additional_menu_state = ""
 
         self.setWindowTitle("FASTA File Perser")
+        self.setMinimumWidth(1500)
+        self.setMinimumHeight(500)
 
         # Containers
         main_page_container = QWidget(self)
-        main_page_container.setMinimumHeight(500)
-        main_page_container.setMinimumWidth(1000)
         main_page_container.setStyleSheet("background-color: yellow;") ##
 
         self.additional_menu_container = QWidget(self)
@@ -83,14 +83,9 @@ class MainWindow(QMainWindow):
         # Copy button
         copy_button = QPushButton("Copy output", self)
         copy_button.setFixedWidth(150)
-        bottom_layout.addWidget(copy_button)
+        bottom_layout.addWidget(copy_button, alignment = Qt.AlignmentFlag.AlignLeft)
 
-        # Overwrite output checkbox
-        self.save_output_checkbox = QCheckBox("Don't overwrite outputs", self)
-        self.save_output_checkbox.setChecked(False)
-        bottom_layout.addWidget(self.save_output_checkbox)
         main_page_layout.addLayout(bottom_layout)
-
         self.window_layout.addWidget(main_page_container)
 
         # Additional menu
@@ -120,13 +115,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
 
-    def update_output(self, text):
-        if self.save_output_checkbox.isChecked() and self.output_label.text() != "":
-            separator = "----------------------------------------------------------------------------------------------------------"
-            self.output_label.setText(f"{self.output_label.text()}\n{separator}\n{text}")
-        else:
-            self.output_label.setText(text)
-
     def action_handler(self):
         action = self.sender()
         action_id = action.data()
@@ -149,6 +137,9 @@ class MainWindow(QMainWindow):
         elif action_id == "sequence_menu":
             self.create_menu("sequence", self.dna_operations)
 
+        elif action_id == "save_output":
+            save_file(self, self.output_label.text())
+
 
     def create_menu(self, menu_type, operations):
         if not self.file_path and menu_type != "main":
@@ -168,9 +159,10 @@ class MainWindow(QMainWindow):
         # Update with new one
         if menu_type == "main":
             for operation in operations:
-                label = QLabel(operation, self)
+                label = QLabel(operation)
                 label.setWordWrap(True)
-                label.setStyleSheet("font-size: 12px")
+                label.setStyleSheet("font-size: 12px; border: 1px solid green;")
+                label.setMinimumWidth(300)
                 self.menu_in_menu_lo.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
 
         elif menu_type == "sequence":
@@ -222,7 +214,7 @@ class MainWindow(QMainWindow):
             self.checkboxes_obj_list.append(checkbox)
         procees_buttoon = QPushButton("Proceed Operations")
         procees_buttoon.clicked.connect(lambda: self.process_selected_actions(operations))
-        self.menu_in_menu_lo.addWidget(procees_buttoon)
+        self.menu_in_menu_lo.addWidget(procees_buttoon, alignment = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop)
 
     def process_selected_actions(self, operations):
         selected_operations = [
