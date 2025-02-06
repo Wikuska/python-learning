@@ -67,11 +67,19 @@ class MainWindow(QMainWindow):
     def get_weather(self):
         if self.city_input.text() == "": 
             return
+        
         weather_id, weather, temp_in_c = get_weather(self.city_input.text())
-        self.city_label.setText(f"Weather in {self.city_input.text().title()}")
-        self.icon_label.setPixmap(get_icon(weather_id))
-        self.temp_label.setText(f"Temperature: {temp_in_c}°C")
-        self.weather_label.setText(f"Weather: {weather.capitalize()}")
+
+        if weather_id:
+            self.city_label.setText(f"Weather in {self.city_input.text().title()}")
+            self.icon_label.setPixmap(get_icon(weather_id))
+            self.temp_label.setText(f"Temperature: {temp_in_c}°C")
+            self.weather_label.setText(f"Weather: {weather.capitalize()}")
+        else:
+            self.city_label.setText(weather)
+            self.icon_label.clear()
+            self.temp_label.clear()
+            self.weather_label.clear()
 
 
 app = QApplication([])

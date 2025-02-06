@@ -11,13 +11,28 @@ def get_weather(city):
         "q": city,
         "appid": API_KEY,
     }
-    response = requests.get(url = get_weather_url, params = params)
-    response.raise_for_status()
-    data = response.json()
-    weather_id = data["weather"][0]["id"]
-    weather = data["weather"][0]["description"]
-    temp_in_c = round(data["main"]["temp"] - 273.15)
-    return weather_id, weather, temp_in_c
+
+    try:
+        response = requests.get(url = get_weather_url, params = params)
+        response.raise_for_status()
+        data = response.json()
+
+        weather_id = data["weather"][0]["id"]
+        weather = data["weather"][0]["description"]
+        temp_in_c = round(data["main"]["temp"] - 273.15)
+
+        return weather_id, weather, temp_in_c
+    
+    except requests.exceptions.HTTPError as e:
+        if response.status_code == 404:
+            return None, "City not found", None
+        return None, f"HTTP Error {e}", None
+    
+    except requests.exceptions.ConnectionError:
+        return None, "Network error. Check connection.", None
+    
+    except requests.exceptions.RequestException as e:
+        return None, f"Error: {e}", None
 
 icon_dict = {
     2: "11d",
