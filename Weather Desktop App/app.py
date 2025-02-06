@@ -1,5 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QMainWindow, QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QLabel, QComboBox
+from funtionality import get_weather
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -20,6 +21,7 @@ class MainWindow(QMainWindow):
 
         self.get_weather_button = QPushButton("Get Weather", self)
         self.get_weather_button.setFixedSize(150, 30)
+        self.get_weather_button.clicked.connect(self.get_weather)
 
         self.icon_label = QLabel(self)
         self.temp_label = QLabel(self)
@@ -40,6 +42,15 @@ class MainWindow(QMainWindow):
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
+
+    def get_weather(self):
+        if self.city_input.text() == "": 
+            return
+        weather_id, weather, temp_in_c = get_weather(self.city_input.text())
+        self.icon_label.setText(f"ID {weather_id}")
+        self.temp_label.setText(f"Temperature: {temp_in_c}°C")
+        self.weather_label.setText(f"Weather: {weather.capitalize()}")
+
 
 app = QApplication([])
 w = MainWindow()
