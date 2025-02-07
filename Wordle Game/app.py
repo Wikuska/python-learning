@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QLabel, QHBoxLayout
-from functionality import validate_answer
+from functionality import validate_answer, check_correct_letters
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -12,7 +12,7 @@ class MainWindow(QWidget):
 
         self.word = "crown"
 
-        label_objets = []
+        self.label_objets = []
 
         main_layout = QVBoxLayout()
         rows_layout = QVBoxLayout()
@@ -21,9 +21,9 @@ class MainWindow(QWidget):
         for i in range(6):
             row_layout = QHBoxLayout()
             for i in range(5):
-                label = QLabel(alignment = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+                label = QLabel("", alignment = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
                 label.setStyleSheet("font-size: 24px; font-weight: bold; background-color: #3a3a3c")
-                label_objets.append(label)
+                self.label_objets.append(label)
                 row_layout.addWidget(label)
             rows_layout.addLayout(row_layout)
 
@@ -50,9 +50,19 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
 
     def guess_submitted(self):
-        is_validated = validate_answer(self.answer_lineedit.text().strip(), self.warning_label)
+        guess = self.answer_lineedit.text().strip()
+        is_validated = validate_answer(guess, self.warning_label)
         if is_validated:
-            pass
+            letters_score = check_correct_letters(guess, self.word)
+
+            for label, letter, score in zip(self.label_objets, guess, letters_score):
+                label.setText(letter)
+                if score == 1:
+                    label.setStyleSheet("font-size: 24px; font-weight: bold; background-color: yellow")
+                elif score == 2:
+                    label.setStyleSheet("font-size: 24px; font-weight: bold; background-color: green")
+            del self.label_objets[:5]
+
 
 app = QApplication([])
 w = MainWindow()
