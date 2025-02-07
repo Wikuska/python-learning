@@ -40,7 +40,7 @@ class MainWindow(QWidget):
         self.setLayout(self.main_layout)
 
     def guess_submitted(self):
-        guess = self.answer_lineedit.text().strip().lower()
+        guess = self.answer_lineedit.text().strip().upper()
         is_validated = validate_answer(guess, self.warning_label)
         if is_validated:
             self.answer_lineedit.clear()

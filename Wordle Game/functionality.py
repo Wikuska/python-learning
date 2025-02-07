@@ -4,11 +4,21 @@ import requests
 import random
 
 def get_word():
-    response = requests.get("https://api.datamuse.com/words?ml=common&max=100")
-    words_data = [word["word"] for word in response.json()]
-    filtered_words = [word for word in words_data if len(word) == 5 and len(word.split()) == 1]
-    random_word = random.choice(filtered_words)
-    return random_word
+    try:
+        response = requests.get("https://api.datamuse.com/words?ml=common&max=100")
+        response.raise_for_status()
+
+        words_data = [word["word"] for word in response.json()]
+        filtered_words = [word for word in words_data if len(word) == 5 and len(word.split()) == 1]
+
+        if not filtered_words:
+            raise ValueError()
+
+        return random.choice(filtered_words).upper()
+    
+    except (requests.RequestException, ValueError):
+        with open("words.txt", "r") as file:
+            return random.choice(file.read().split()).upper()
 
 def create_labels(main_layout):
     label_obj_list = []
