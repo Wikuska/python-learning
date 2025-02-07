@@ -12,7 +12,7 @@ def validate_answer(guess, reason_label):
     reason_label.setText("")
     return True
 
-def check_correct_letters(guess, answer):
+def check_correct_letters(guess, answer, labels_list):
 
     letters_score = [] # wrong letter - 0, good letter wrong placement - 1, good letter good placement - 2
 
@@ -25,4 +25,15 @@ def check_correct_letters(guess, answer):
         else:
             letters_score.append(0)
 
-    return letters_score
+    for label, letter, score in zip(labels_list, guess, letters_score):
+        label.setText(letter)
+        if score == 1:
+            label.setStyleSheet("font-size: 24px; font-weight: bold; background-color: yellow")
+        elif score == 2:
+            label.setStyleSheet("font-size: 24px; font-weight: bold; background-color: green")
+    del labels_list[:5]
+
+    if guess == answer:
+        return True
+    else:
+        return False

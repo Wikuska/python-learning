@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QLabel, QHBoxLayout
 from functionality import validate_answer, check_correct_letters
+from custom_dialog import CustomDialog
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -50,19 +51,18 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
 
     def guess_submitted(self):
-        guess = self.answer_lineedit.text().strip()
+        guess = self.answer_lineedit.text().strip().lower()
         is_validated = validate_answer(guess, self.warning_label)
         if is_validated:
-            letters_score = check_correct_letters(guess, self.word)
+            self.answer_lineedit.clear()
+            game_won = check_correct_letters(guess, self.word, self.label_objets)
 
-            for label, letter, score in zip(self.label_objets, guess, letters_score):
-                label.setText(letter)
-                if score == 1:
-                    label.setStyleSheet("font-size: 24px; font-weight: bold; background-color: yellow")
-                elif score == 2:
-                    label.setStyleSheet("font-size: 24px; font-weight: bold; background-color: green")
-            del self.label_objets[:5]
-
+            if game_won or not game_won and len(self.label_objets) < 5:
+                dlg = CustomDialog(game_won, self.word)
+                if dlg.exec():
+                    print("Again!")
+                else:
+                    print("Close!")              
 
 app = QApplication([])
 w = MainWindow()
