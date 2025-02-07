@@ -1,3 +1,32 @@
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout
+
+def create_labels(main_layout):
+    label_obj_list = []
+    rows_layout = QVBoxLayout()
+    for _ in range(6):
+        row_layout = QHBoxLayout()
+        for _ in range(5):
+            label = QLabel("", alignment = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+            label.setStyleSheet("font-size: 24px; font-weight: bold; background-color: #3a3a3c")
+            label_obj_list.append(label)
+            row_layout.addWidget(label)
+        rows_layout.addLayout(row_layout)
+
+    if main_layout.count() > 0:
+        item = main_layout.takeAt(0)
+        if item:
+            layout = item.layout()
+            if layout:
+                while layout.count():
+                    child = layout.takeAt(0)
+                    if child.widget():
+                        child.widget().deleteLater()
+                layout.deleteLater()
+
+    main_layout.insertLayout(0, rows_layout)
+
+    return label_obj_list
 
 def validate_answer(guess, reason_label):
     if guess == "":
