@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QLabel, QHBoxLayout
-from functionality import validate_answer, check_correct_letters, create_labels
+from functionality import validate_answer, check_correct_letters, create_labels, get_word
 from custom_dialog import CustomDialog
 
 class MainWindow(QWidget):
@@ -11,7 +11,7 @@ class MainWindow(QWidget):
         self.setFixedSize(510,650)
         self.setStyleSheet("background-color: #121213")
 
-        self.word = "crown"
+        self.word = get_word()
 
         self.main_layout = QVBoxLayout()
         answer_layout = QHBoxLayout()
@@ -49,6 +49,7 @@ class MainWindow(QWidget):
             if game_won or not game_won and len(self.label_objects) < 5:
                 dlg = CustomDialog(game_won, self.word)
                 if dlg.exec():
+                    self.word = get_word()
                     self.label_objects = create_labels(self.main_layout)
                 else:
                     self.close()             
