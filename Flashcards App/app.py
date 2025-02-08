@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import  QApplication, QMainWindow, QFrame, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 import sys
-from functionality import get_topics, get_topic_question, get_question_answer
+from functionality import get_topics, get_topic_question, get_question_answer, set_question_known
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -10,6 +10,8 @@ class MainWindow(QWidget):
 
         self.setWindowTitle("Flashcard App")
         self.setFixedSize(430, 550)
+
+        self.current_question = None
 
         # Create container for multiple screens
         self.stack = QStackedWidget(self)
@@ -51,12 +53,7 @@ class MainWindow(QWidget):
         topics_list = get_topics()
         if topics_list:
             self.flashcard_topics_combobox.addItems(topics_list)
-        
-        start_button = QPushButton("Start")
-        start_button.clicked.connect(self.show_question)
-
-        top_layout.addWidget(self.flashcard_topics_combobox)
-        top_layout.addWidget(start_button)
+        self.flashcard_topics_combobox.currentIndexChanged.connect(self.topic_changed)
 
         self.flashcard_label = QLabel("Question", alignment = Qt.AlignmentFlag.AlignCenter)
         self.flashcard_label.setWordWrap(True)
@@ -66,27 +63,44 @@ class MainWindow(QWidget):
         see_answer_button.clicked.connect(self.show_answer)
 
         learned_button = QPushButton("I know that one")
+        learned_button.clicked.connect(self.answer_known)
 
         need_to_practice_button = QPushButton("Need to practice")
+        need_to_practice_button.clicked.connect(self.answer_not_known)
 
         buttons_layout.addWidget(learned_button)
         buttons_layout.addWidget(see_answer_button)
         buttons_layout.addWidget(need_to_practice_button)
 
-        layout.addLayout(top_layout)
+        layout.addWidget(self.flashcard_topics_combobox)
         layout.addWidget(self.flashcard_label)
         layout.addLayout(buttons_layout)
 
         return screen
     
+    def topic_changed(self, index):
+        if self.flashcard_topics_combobox.itemText(0) == "Choose topic" and index != 0:
+            self.flashcard_topics_combobox.removeItem(0)
+            index -= 1
+
+        self.show_question()
+
     def show_question(self):
-        question = get_topic_question(self.flashcard_topics_combobox.currentText())
-        self.flashcard_label.setText(question)
+        self.current_question = get_topic_question(self.flashcard_topics_combobox.currentText(), self.current_question)
+        self.flashcard_label.setText(self.current_question)
 
     def show_answer(self):
-        answer = get_question_answer(self.flashcard_label.text())
+        answer = get_question_answer(self.current_question)
         if answer:
             self.flashcard_label.setText(answer)
+
+    def answer_known(self):
+        set_question_known(1, self.current_question)
+        self.show_question()
+
+    def answer_not_known(self):
+        set_question_known(0, self.current_question)
+        self.show_question()
     
 
 if __name__ == "__main__":
