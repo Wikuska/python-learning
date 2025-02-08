@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import  QApplication, QMainWindow, QFrame, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 import sys
-from functionality import get_topics, get_topic_question
+from functionality import get_topics, get_topic_question, get_question_answer
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -63,6 +63,7 @@ class MainWindow(QWidget):
         self.flashcard_label.setStyleSheet("font-size: 25px; background-color: #E6E6E6")
 
         see_answer_button = QPushButton("Show me answer")
+        see_answer_button.clicked.connect(self.show_answer)
 
         learned_button = QPushButton("I know that one")
 
@@ -81,6 +82,11 @@ class MainWindow(QWidget):
     def show_question(self):
         question = get_topic_question(self.flashcard_topics_combobox.currentText())
         self.flashcard_label.setText(question)
+
+    def show_answer(self):
+        answer = get_question_answer(self.flashcard_label.text())
+        if answer:
+            self.flashcard_label.setText(answer)
     
 
 if __name__ == "__main__":

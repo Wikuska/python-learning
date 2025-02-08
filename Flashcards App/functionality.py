@@ -26,4 +26,16 @@ def get_topics():
     
 def get_topic_question(topic):
     questions = session.query(Questions).filter(Questions.topic_name == topic).all()
-    return random.choice([question.question for question in questions])
+
+    if questions:
+        return random.choice([question.question for question in questions])
+    else:
+        return None
+
+def get_question_answer(question_text):
+    question = session.query(Questions).filter(Questions.question == question_text).first()
+
+    if question:
+        return question.answer
+    else:
+        return None
