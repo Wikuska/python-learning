@@ -53,3 +53,16 @@ def set_question_known(is_known, question_text):
     if question:
         question.is_known = is_known
         session.commit()
+
+def create_topic(topic_name, warning_label):
+    if len(topic_name) < 1:
+        warning_label.setText("Name cant be empty!")
+        return
+    is_existing = session.query(Topics).filter_by(name=topic_name).first()
+    if is_existing:
+        warning_label.setText("Topic like this already exists!")
+        return
+    new_topic = Topics(name = topic_name)
+    session.add(new_topic)
+    session.commit()
+    return warning_label.setText("Set created!")

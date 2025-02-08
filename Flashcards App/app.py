@@ -1,8 +1,8 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import  QApplication, QMainWindow, QFrame, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
+from PySide6.QtWidgets import  QApplication, QLineEdit, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 import sys
-from functionality import get_topics, get_topic_question, get_question_answer, set_question_known
+from functionality import get_topics, get_topic_question, get_question_answer, set_question_known, create_topic
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -19,10 +19,12 @@ class MainWindow(QWidget):
         # Create pages
         self.menu_screen = self.create_main_screen()
         self.flashcard_screen = self.create_flashcard_screen()
+        self.add_screen = self.create_add_screen()
 
         # Add pages to the stack
         self.stack.addWidget(self.menu_screen)
         self.stack.addWidget(self.flashcard_screen)
+        self.stack.addWidget(self.add_screen)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.stack)
@@ -33,12 +35,13 @@ class MainWindow(QWidget):
         layout = QVBoxLayout(screen)
 
         start_button = QPushButton("Start learning")
-        modify_button = QPushButton("Modify Data")
+        add_button = QPushButton("Add new set")
 
         start_button.clicked.connect(lambda: self.stack.setCurrentWidget(self.flashcard_screen))
+        add_button.clicked.connect(lambda: self.stack.setCurrentWidget(self.add_screen))
 
         layout.addWidget(start_button)
-        layout.addWidget(modify_button)
+        layout.addWidget(add_button)
 
         return screen
 
@@ -109,6 +112,23 @@ class MainWindow(QWidget):
         set_question_known(0, self.current_question)
         self.show_question()
     
+    def create_add_screen(self):
+        screen = QWidget()
+        layout = QVBoxLayout(screen)
+
+        main_label = QLabel("Name your set:")
+        set_name_input = QLineEdit(alignment=Qt.AlignmentFlag.AlignHCenter)
+        create_button = QPushButton("Create set")
+        warning_label = QLabel()  
+        create_button.clicked.connect(lambda: create_topic(set_name_input.text().strip().capitalize(), warning_label)) 
+
+        layout.addWidget(main_label)
+        layout.addWidget(set_name_input)
+        layout.addWidget(create_button)
+        layout.addWidget(warning_label)
+
+        return screen
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
