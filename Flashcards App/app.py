@@ -45,7 +45,6 @@ class MainWindow(QWidget):
     def create_flashcard_screen(self):
         screen = QWidget()
         layout = QVBoxLayout(screen)
-        top_layout = QHBoxLayout()
         buttons_layout = QHBoxLayout()
 
         self.flashcard_topics_combobox = QComboBox()
@@ -54,6 +53,8 @@ class MainWindow(QWidget):
         if topics_list:
             self.flashcard_topics_combobox.addItems(topics_list)
         self.flashcard_topics_combobox.currentIndexChanged.connect(self.topic_changed)
+
+        self.include_known_checkbox = QCheckBox("Include questions marked as known")
 
         self.flashcard_label = QLabel("Question", alignment = Qt.AlignmentFlag.AlignCenter)
         self.flashcard_label.setWordWrap(True)
@@ -73,6 +74,7 @@ class MainWindow(QWidget):
         buttons_layout.addWidget(need_to_practice_button)
 
         layout.addWidget(self.flashcard_topics_combobox)
+        layout.addWidget(self.include_known_checkbox)
         layout.addWidget(self.flashcard_label)
         layout.addLayout(buttons_layout)
 
@@ -86,7 +88,12 @@ class MainWindow(QWidget):
         self.show_question()
 
     def show_question(self):
-        self.current_question = get_topic_question(self.flashcard_topics_combobox.currentText(), self.current_question)
+        self.current_question = get_topic_question(self.flashcard_topics_combobox.currentText(), self.current_question, self.include_known_checkbox.isChecked())
+
+        if not self.current_question:
+            self.flashcard_label.setText("You know everything from this set")
+            return
+
         self.flashcard_label.setText(self.current_question)
 
     def show_answer(self):

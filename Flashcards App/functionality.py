@@ -24,19 +24,20 @@ def get_topics():
         logging.error(f"Error fetching topics: {e}")
         return []
     
-def get_topic_question(topic, current_question):
-    questions = session.query(Questions).filter(Questions.topic_name == topic).all()
+def get_topic_question(topic, current_question, include_known):
+    query = session.query(Questions).filter(Questions.topic_name == topic)
+    
+    if not include_known:
+        query = query.filter(Questions.is_known == 0)
 
-    if questions:
-        if current_question:
-            try:
-                return random.choice([question.question for question in questions if question.question != current_question])
-            except IndexError:
-                return random.choice([question.question for question in questions])
-        else:
-            return random.choice([question.question for question in questions])
-    else:
+    questions = query.all()
+
+    if not questions:
         return None
+    
+    filtered_questions = [question.question for question in questions if question.question != current_question]
+
+    return random.choice(filtered_questions) if filtered_questions else random.choice([question.question for question in questions])
 
 def get_question_answer(question_text):
     question = session.query(Questions).filter(Questions.question == question_text).first()
