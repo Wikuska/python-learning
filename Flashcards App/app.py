@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import  QApplication, QMainWindow, QFrame, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 import sys
+from functionality import get_topics, get_topic_question
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -42,13 +43,25 @@ class MainWindow(QWidget):
     def create_flashcard_screen(self):
         screen = QWidget()
         layout = QVBoxLayout(screen)
+        top_layout = QHBoxLayout()
         buttons_layout = QHBoxLayout()
 
-        flashcard_topics_combobox = QComboBox()
-        flashcard_topics_combobox.addItem("Choose topic")
+        self.flashcard_topics_combobox = QComboBox()
+        self.flashcard_topics_combobox.addItem("Choose topic")
+        topics_list = get_topics()
+        if topics_list:
+            self.flashcard_topics_combobox.addItems(topics_list)
+        
+        start_button = QPushButton("Start")
+        start_button.clicked.connect(self.show_question)
 
-        flashcard_label = QLabel("Question", alignment = Qt.AlignmentFlag.AlignCenter)
-        flashcard_label.setStyleSheet("font-size: 25px; background-color: #E6E6E6")
+        top_layout.addWidget(self.flashcard_topics_combobox)
+        top_layout.addWidget(start_button)
+
+        self.flashcard_label = QLabel("Question", alignment = Qt.AlignmentFlag.AlignCenter)
+        self.flashcard_label.setWordWrap(True)
+        self.flashcard_label.setStyleSheet("font-size: 25px; background-color: #E6E6E6")
+
         see_answer_button = QPushButton("Show me answer")
 
         learned_button = QPushButton("I know that one")
@@ -59,11 +72,15 @@ class MainWindow(QWidget):
         buttons_layout.addWidget(see_answer_button)
         buttons_layout.addWidget(need_to_practice_button)
 
-        layout.addWidget(flashcard_topics_combobox)
-        layout.addWidget(flashcard_label)
+        layout.addLayout(top_layout)
+        layout.addWidget(self.flashcard_label)
         layout.addLayout(buttons_layout)
 
         return screen
+    
+    def show_question(self):
+        question = get_topic_question(self.flashcard_topics_combobox.currentText())
+        self.flashcard_label.setText(question)
     
 
 if __name__ == "__main__":
