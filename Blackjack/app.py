@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import  QApplication, QLineEdit, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtWidgets import QStyleFactory
-from functionality import get_random_card, count_score
+from functionality import get_random_card, count_score, get_hidden_card
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -34,14 +34,15 @@ class MainWindow(QWidget):
 
         self.set_cards()
 
-        hit_button = QPushButton("HIT")
-        hit_button.clicked.connect(lambda: self.draw_card(1))
+        self.hit_button = QPushButton("HIT")
+        self.hit_button.clicked.connect(lambda: self.draw_card(1))
         stand_button = QPushButton("STAND")
+        stand_button.clicked.connect(self.end_players_turn)
 
         score_layout.addWidget(self.dealer_score_label)
         score_layout.addWidget(self.player_score_label)
 
-        buttons_layout.addWidget(hit_button)
+        buttons_layout.addWidget(self.hit_button)
         buttons_layout.addWidget(stand_button)
 
         main_layout.addLayout(score_layout, stretch=0)
@@ -52,7 +53,7 @@ class MainWindow(QWidget):
         main_layout.setAlignment(buttons_layout, Qt.AlignmentFlag.AlignVCenter)
 
     def set_cards(self):
-        get_random_card(self.dealer_layout, True)
+        self.hidden_card = get_random_card(self.dealer_layout, True)
         self.draw_card(0)
         self.draw_card(1)
 
@@ -69,6 +70,13 @@ class MainWindow(QWidget):
         self.dealer_score_label.setText(f"Dealer Score: {self.dealer_score}")
         self.player_score_label.setText(f"Your Score: {self.player_score}")
 
+    def end_players_turn(self):
+        self.dealer_ranks.append(get_hidden_card(self.hidden_card))
+        self.update_score()
+        self.hit_button.setEnabled(False)
+
+        while self.dealer_score < 17:
+            self.draw_card(0)
 
 if __name__ == "__main__":
     app = QApplication([])
