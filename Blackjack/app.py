@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import  QApplication, QLineEdit, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtWidgets import QStyleFactory
@@ -87,8 +87,6 @@ class MainWindow(QWidget):
         self.player_score_label.setText(f"Your Score: {self.player_score}")
         if self.player_score > 21:
             self.game_ends(0, "Your score is over 21!")
-        elif self.dealer_score > 21:
-            self.game_ends(1, "Dealer score is over 21!")
 
     def end_players_turn(self):
         self.turn_label.setText("DEALER TURN")
@@ -97,10 +95,23 @@ class MainWindow(QWidget):
         self.update_score()
         self.hit_button.setEnabled(False)
 
-        while self.dealer_score < 17:
-            self.draw_card(0)
+        if self.dealer_score < 17:
+            QTimer.singleShot(1000, self.dealer_hit)
+        else:
+            self.check_winner()
 
-        if self.dealer_score > self.player_score:
+    def dealer_hit(self):
+        self.draw_card(0)
+
+        if self.dealer_score < 17:
+            QTimer.singleShot(1000, self.dealer_hit)
+        else:
+            self.check_winner()
+
+    def check_winner(self):
+        if self.dealer_score > 21:
+            self.game_ends(1, "Dealer score is over 21!")
+        elif self.dealer_score > self.player_score:
             self.game_ends(0, "Dealer score is higher!")
         elif self.dealer_score < self.player_score:
             self.game_ends(1, "Your score is higher!")

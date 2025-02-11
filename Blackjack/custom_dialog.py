@@ -23,7 +23,7 @@ class CustomDialog(QDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         layout = QVBoxLayout()
-        message = QLabel(f"{msg}\nWann play again?", alignment = Qt.AlignmentFlag.AlignHCenter)
+        message = QLabel(f"{msg}\nWanna play again?", alignment = Qt.AlignmentFlag.AlignHCenter)
         layout.addWidget(message, alignment=Qt.AlignmentFlag.AlignHCenter)
         layout.addWidget(self.buttonBox, alignment = Qt.AlignmentFlag.AlignHCenter)
         self.setLayout(layout)
