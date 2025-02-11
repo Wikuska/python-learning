@@ -9,15 +9,12 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.suits = ['♠', '♣', '♦', '♥']
+        self.values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
         self.setWindowTitle("Flashcard App")
         self.setFixedSize(880, 510)
         self.setStyleSheet("background-color: #00994C")
-
-        self.dealer_ranks = []
-        self.player_ranks = []
-
-        self.dealer_score = 0
-        self.player_score = 0
 
         main_layout = QVBoxLayout(self)
         score_layout = QHBoxLayout()
@@ -33,8 +30,6 @@ class MainWindow(QWidget):
         self.player_score_label = QLabel(f"Your Score: 0")
         self.player_score_label.setStyleSheet("font-size: 15px;")
 
-        self.set_cards()
-
         self.hit_button = QPushButton("HIT")
         self.hit_button.clicked.connect(lambda: self.draw_card(1))
         stand_button = QPushButton("STAND")
@@ -46,6 +41,8 @@ class MainWindow(QWidget):
         buttons_layout.addWidget(self.hit_button)
         buttons_layout.addWidget(stand_button)
 
+        self.set_up_game()
+
         main_layout.addLayout(score_layout, stretch=0)
         main_layout.addLayout(self.dealer_layout, stretch=1)
         main_layout.addSpacing(20)
@@ -53,17 +50,30 @@ class MainWindow(QWidget):
         main_layout.addLayout(buttons_layout, stretch=0)
         main_layout.setAlignment(buttons_layout, Qt.AlignmentFlag.AlignVCenter)
 
-    def set_cards(self):
-        self.hidden_card = get_random_card(self.dealer_layout, True)
+    def set_up_game(self):
+        self.hit_button.setEnabled(True)
+
+        self.deck = [f"{value} {suit}" for suit in self.suits for value in self.values]
+
+        self.dealer_ranks = []
+        self.player_ranks = []
+        self.dealer_score = 0
+        self.player_score = 0
+
+        clear_layout(self.dealer_layout)
+        clear_layout(self.player_layout)
+
+        self.hidden_card = get_random_card(self.dealer_layout, True, self.deck)
         self.draw_card(0)
         self.draw_card(1)
 
     def draw_card(self, player):
+        print(len(self.deck))
         if player == 1:
-            self.player_ranks.append(get_random_card(self.player_layout, False))
+            self.player_ranks.append(get_random_card(self.player_layout, False, self.deck))
             self.player_score = count_score(self.player_ranks)
         else:
-            self.dealer_ranks.append(get_random_card(self.dealer_layout, False))
+            self.dealer_ranks.append(get_random_card(self.dealer_layout, False, self.deck))
             self.dealer_score = count_score(self.dealer_ranks)
         self.update_score()
 
@@ -77,7 +87,7 @@ class MainWindow(QWidget):
 
 
     def end_players_turn(self):
-        self.dealer_ranks.append(get_hidden_card(self.hidden_card))
+        self.dealer_ranks.append(get_hidden_card(self.hidden_card, self.deck))
         self.dealer_score = count_score(self.dealer_ranks)
         self.update_score()
         self.hit_button.setEnabled(False)
@@ -95,7 +105,7 @@ class MainWindow(QWidget):
     def game_ends(self, is_won, msg):
         dlg = CustomDialog(is_won, msg)
         if dlg.exec():
-            self.play_again()
+            self.set_up_game()
         else:
             self.close()
 

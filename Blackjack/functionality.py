@@ -2,11 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import  QApplication, QLineEdit, QLabel
 import random
 
-suits = ['♠', '♣', '♦', '♥']
-values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-deck = [f"{value} {suit}" for suit in suits for value in values]
-
-def get_hidden_card(card):
+def get_hidden_card(card, deck):
     random.shuffle(deck)
     drawn_card = deck.pop()
 
@@ -19,7 +15,7 @@ def get_hidden_card(card):
 
     return drawn_card.split()[0]
 
-def get_random_card(layout, hidden):
+def get_random_card(layout, hidden, deck):
     if hidden:
         card = QLabel(alignment = Qt.AlignmentFlag.AlignCenter)
         card.setFixedSize(100,170)
@@ -69,3 +65,10 @@ def count_score(ranks):
                     break
 
     return score
+
+def clear_layout(layout):
+    while layout.count():
+        item = layout.takeAt(0)
+        widget = item.widget()
+        if widget:
+            widget.deleteLater()
