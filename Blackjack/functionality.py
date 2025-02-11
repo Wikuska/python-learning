@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import  QApplication, QLineEdit, QLabel
+from PySide6.QtWidgets import QLabel
 import random
 
 def get_hidden_card(card, deck):

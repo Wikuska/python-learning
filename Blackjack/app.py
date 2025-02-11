@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import  QApplication, QLineEdit, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
+from PySide6.QtWidgets import  QApplication, QLabel, QWidget, QPushButton
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtWidgets import QStyleFactory
 from functionality import get_random_card, count_score, get_hidden_card, clear_layout
