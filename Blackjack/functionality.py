@@ -61,4 +61,11 @@ def count_score(ranks):
                 points = 10
         score += points
 
+    if score > 21:
+        for rank in ranks:
+            if rank == "A":
+                score -= 10
+                if score <= 21:
+                    break
+
     return score
