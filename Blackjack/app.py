@@ -2,7 +2,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import  QApplication, QLineEdit, QLabel, QWidget, QScrollArea, QComboBox, QPushButton, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QStackedWidget
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 from PySide6.QtWidgets import QStyleFactory
-from functionality import get_random_card, count_score, get_hidden_card
+from functionality import get_random_card, count_score, get_hidden_card, clear_layout
+from custom_dialog import CustomDialog
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -69,14 +70,35 @@ class MainWindow(QWidget):
     def update_score(self):
         self.dealer_score_label.setText(f"Dealer Score: {self.dealer_score}")
         self.player_score_label.setText(f"Your Score: {self.player_score}")
+        if self.player_score > 21:
+            self.game_ends(0, "Your score is over 21!")
+        elif self.dealer_score > 21:
+            self.game_ends(1, "Dealer score is over 21!")
+
 
     def end_players_turn(self):
         self.dealer_ranks.append(get_hidden_card(self.hidden_card))
+        self.dealer_score = count_score(self.dealer_ranks)
         self.update_score()
         self.hit_button.setEnabled(False)
 
         while self.dealer_score < 17:
             self.draw_card(0)
+
+        if self.dealer_score > self.player_score:
+            self.game_ends(0, "Dealer score is higher!")
+        elif self.dealer_score < self.player_score:
+            self.game_ends(1, "Your score is higher!")
+        elif self.dealer_score == self.player_score:
+            self.game_ends(2, "Scores are the same!")
+
+    def game_ends(self, is_won, msg):
+        dlg = CustomDialog(is_won, msg)
+        if dlg.exec():
+            self.play_again()
+        else:
+            self.close()
+
 
 if __name__ == "__main__":
     app = QApplication([])
