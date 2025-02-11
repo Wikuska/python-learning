@@ -30,6 +30,11 @@ class MainWindow(QWidget):
         self.player_score_label = QLabel(f"Your Score: 0")
         self.player_score_label.setStyleSheet("font-size: 15px;")
 
+        self.turn_label = QLabel()
+        self.turn_label.setStyleSheet("font-size: 20px; background-color: #30be75")
+        self.turn_label.setFixedHeight(30)
+        self.turn_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+
         self.hit_button = QPushButton("HIT")
         self.hit_button.clicked.connect(lambda: self.draw_card(1))
         stand_button = QPushButton("STAND")
@@ -45,12 +50,13 @@ class MainWindow(QWidget):
 
         main_layout.addLayout(score_layout, stretch=0)
         main_layout.addLayout(self.dealer_layout, stretch=1)
-        main_layout.addSpacing(20)
+        main_layout.addWidget(self.turn_label,stretch=1)
         main_layout.addLayout(self.player_layout, stretch=1)
         main_layout.addLayout(buttons_layout, stretch=0)
         main_layout.setAlignment(buttons_layout, Qt.AlignmentFlag.AlignVCenter)
 
     def set_up_game(self):
+        self.turn_label.setText("YOUR TURN")
         self.hit_button.setEnabled(True)
 
         self.deck = [f"{value} {suit}" for suit in self.suits for value in self.values]
@@ -68,7 +74,6 @@ class MainWindow(QWidget):
         self.draw_card(1)
 
     def draw_card(self, player):
-        print(len(self.deck))
         if player == 1:
             self.player_ranks.append(get_random_card(self.player_layout, False, self.deck))
             self.player_score = count_score(self.player_ranks)
@@ -85,8 +90,8 @@ class MainWindow(QWidget):
         elif self.dealer_score > 21:
             self.game_ends(1, "Dealer score is over 21!")
 
-
     def end_players_turn(self):
+        self.turn_label.setText("DEALER TURN")
         self.dealer_ranks.append(get_hidden_card(self.hidden_card, self.deck))
         self.dealer_score = count_score(self.dealer_ranks)
         self.update_score()
